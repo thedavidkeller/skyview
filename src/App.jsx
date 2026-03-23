@@ -119,13 +119,14 @@ export default function App() {
   const [locating, setLocating]       = useState(false)
   const [alert, setAlert]             = useState(null) // { callsign, distMi, altFt }
 
-  const mapRef      = useRef(null)
-  const markersRef  = useRef({})
-  const canvasRef   = useRef(null)
-  const fetchTimer  = useRef(null)
-  const abortRef    = useRef(null)
-  const watchRef    = useRef(null)
-  const lastFetchAt = useRef(0)
+  const mapRef        = useRef(null)
+  const markersRef    = useRef({})
+  const canvasRef     = useRef(null)
+  const fetchTimer    = useRef(null)
+  const abortRef      = useRef(null)
+  const watchRef      = useRef(null)
+  const lastFetchAt   = useRef(0)
+  const backoffUntil  = useRef(0)
 
   // Set --app-height from window.innerHeight so the map container has the
   // correct pixel size on iOS (where 100%/100vh chains are unreliable).
@@ -150,7 +151,7 @@ export default function App() {
         const { latitude: lat, longitude: lon } = pos.coords
         setUserPos({ lat, lon })
         setLocating(false)
-        mapRef.current?.setView([lat, lon], 11, { animate: true, duration: 0.8 })
+        mapRef.current?.setView([lat, lon], 12, { animate: true, duration: 0.8 })
       },
       () => setLocating(false),
       { enableHighAccuracy: true, timeout: 8000 }
@@ -178,6 +179,7 @@ export default function App() {
     const map = mapRef.current
     if (!map) return
     const now = Date.now()
+    if (now < backoffUntil.current) return
     if (!force && now - lastFetchAt.current < 20000) return
     lastFetchAt.current = now
     if (abortRef.current) abortRef.current.abort()
@@ -198,8 +200,13 @@ export default function App() {
       const res = await fetch(url, { signal: abortRef.current.signal })
       if (!res.ok) {
         const body = await res.text().catch(() => '')
-        console.error(`OpenSky proxy error ${res.status}:`, body)
-        setFetchError(`error ${res.status}`)
+        console.error(`flights proxy error ${res.status}:`, body)
+        if (res.status === 429) {
+          backoffUntil.current = Date.now() + 60000  // back off 60s on rate limit
+          setFetchError('rate limited — retrying in 60s')
+        } else {
+          setFetchError(`error ${res.status}`)
+        }
         setFlightCount(c => c === null ? 0 : c)
         return
       }
@@ -229,7 +236,7 @@ export default function App() {
 
   const scheduleFetch = useCallback(() => {
     clearTimeout(fetchTimer.current)
-    fetchTimer.current = setTimeout(fetchFlights, 800)
+    fetchTimer.current = setTimeout(fetchFlights, 2500)
   }, [fetchFlights])
 
   useEffect(() => {
