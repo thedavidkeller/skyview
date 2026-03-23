@@ -1,0 +1,40 @@
+.app {
+  width: 100%;
+  height: 100%;
+  height: -webkit-fill-available;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.refreshBtn {
+  position: absolute;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  left: 20px;
+  z-index: 1000;
+  background: rgba(245, 242, 238, 0.88);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, border-color 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.refreshBtn:hover {
+  color: var(--text-secondary);
+  border-color: var(--border-hover);
+}

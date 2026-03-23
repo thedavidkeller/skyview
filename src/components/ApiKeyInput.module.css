@@ -1,0 +1,101 @@
+.wrapper {
+  position: absolute;
+  top: calc(48px + env(safe-area-inset-top));
+  right: 20px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+/* Collapsed state — small pill */
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 242, 238, 0.92);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 6px 12px;
+  border-radius: 30px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: border-color 0.2s, color 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.pill:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.pillDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+/* Expanded state — input row */
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input {
+  background: rgba(245, 242, 238, 0.92);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 7px 12px;
+  border-radius: 30px;
+  width: 170px;
+  outline: none;
+  letter-spacing: 0.04em;
+  transition: border-color 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  -webkit-appearance: none;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus {
+  border-color: var(--border-hover);
+}
+
+.done {
+  background: rgba(245, 242, 238, 0.92);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 7px 11px;
+  border-radius: 30px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: border-color 0.2s, color 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  white-space: nowrap;
+}
+
+.done:hover {
+  border-color: var(--border-hover);
+  color: var(--text-primary);
+}
+
+.status {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.07em;
+}
