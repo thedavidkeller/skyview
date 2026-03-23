@@ -143,6 +143,8 @@ export default function App() {
   // ── Geolocation ──────────────────────────────────────────────────────────────
   const locateUser = useCallback(() => {
     setLocating(true)
+    // No enableHighAccuracy on first call — uses fast network/WiFi positioning
+    // (sub-second). watchPosition below refines with GPS over time.
     navigator.geolocation.getCurrentPosition(
       pos => {
         const { latitude: lat, longitude: lon } = pos.coords
@@ -151,7 +153,7 @@ export default function App() {
         mapRef.current?.setView([lat, lon], 14, { animate: true, duration: 0.8 })
       },
       () => setLocating(false),
-      { enableHighAccuracy: true, timeout: 8000 }
+      { timeout: 10000 }
     )
   }, [])
 
@@ -177,7 +179,7 @@ export default function App() {
         }
       },
       null,
-      { enableHighAccuracy: true, maximumAge: 5000 }
+      { enableHighAccuracy: true, maximumAge: 30000 }
     )
     return () => navigator.geolocation.clearWatch(watchRef.current)
   }, [])
