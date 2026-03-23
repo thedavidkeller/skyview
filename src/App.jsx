@@ -44,13 +44,15 @@ function altColor(altFt, distMi) {
   return '#3a3830'                                             // high cruise
 }
 
-function planeIcon(heading = 0, selected = false, altFt = 99999, distMi = 99) {
+function markerStyle(selected, altFt, distMi) {
   const color = selected ? '#c4622d' : altColor(altFt, distMi)
-  const size  = selected ? 34 : (distMi < RADIUS_MI ? 28 : 22)
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" style="transform:rotate(${heading}deg);display:block;transition:transform 0.6s ease">
-    <path d="M12 2L7.5 10.5H3.5L12 15L10 23L12 21.5L14 23L12 15L20.5 10.5H16.5Z" fill="${color}" opacity="${selected ? 1 : distMi < RADIUS_MI ? 0.9 : 0.7}"/>
-  </svg>`
-  return L.divIcon({ html: svg, className: '', iconSize: [size, size], iconAnchor: [size/2, size/2] })
+  return {
+    radius:      selected ? 8 : (distMi < RADIUS_MI ? 6 : 4),
+    fillColor:   color,
+    fillOpacity: selected ? 1 : (distMi < RADIUS_MI ? 0.9 : 0.65),
+    color:       selected ? '#c4622d' : 'rgba(0,0,0,0.25)',
+    weight:      selected ? 2 : 1,
+  }
 }
 
 // Dead-reckon a position forward by elapsedS seconds given speed (m/s) and heading (deg)
@@ -108,6 +110,7 @@ export default function App() {
 
   const mapRef      = useRef(null)
   const markersRef  = useRef({})
+  const canvasRef   = useRef(null)
   const fetchTimer  = useRef(null)
   const abortRef    = useRef(null)
   const watchRef    = useRef(null)
@@ -307,24 +310,24 @@ export default function App() {
     }
   }, [flights, selectFlight])
 
-  // ── Render markers ────────────────────────────────────────────────────────────
+  // ── Render markers (canvas — one <canvas> for all markers, no DOM per plane) ──
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
+    if (!canvasRef.current) canvasRef.current = L.canvas({ padding: 0.5 })
     const seen = new Set()
     Object.values(flights).forEach(d => {
       seen.add(d.icao)
       const altFt = ft(d.alt)
-      const dist = userPos ? distanceMi(userPos.lat, userPos.lon, d.lat, d.lon) : 99
+      const dist  = userPos ? distanceMi(userPos.lat, userPos.lon, d.lat, d.lon) : 99
+      const style = markerStyle(d.icao === selected, altFt, dist)
       if (markersRef.current[d.icao]) {
         markersRef.current[d.icao].setLatLng([d.lat, d.lon])
-        markersRef.current[d.icao].setIcon(planeIcon(d.heading, d.icao === selected, altFt, dist))
+        markersRef.current[d.icao].setRadius(style.radius)
+        markersRef.current[d.icao].setStyle(style)
       } else {
-        const m = L.marker([d.lat, d.lon], {
-          icon: planeIcon(d.heading, false, altFt, dist),
-          zIndexOffset: altFt < 1500 ? 500 : 100,
-        }).addTo(map)
-        m.on('click touchend', (e) => { L.DomEvent.stopPropagation(e); selectFlight(d.icao) })
+        const m = L.circleMarker([d.lat, d.lon], { ...style, renderer: canvasRef.current }).addTo(map)
+        m.on('click', () => selectFlight(d.icao))
         markersRef.current[d.icao] = m
       }
     })
@@ -338,8 +341,10 @@ export default function App() {
       const d = flights[icao]
       if (d) {
         const altFt = ft(d.alt)
-        const dist = userPos ? distanceMi(userPos.lat, userPos.lon, d.lat, d.lon) : 99
-        m.setIcon(planeIcon(d.heading, icao === selected, altFt, dist))
+        const dist  = userPos ? distanceMi(userPos.lat, userPos.lon, d.lat, d.lon) : 99
+        const style = markerStyle(icao === selected, altFt, dist)
+        m.setRadius(style.radius)
+        m.setStyle(style)
       }
     })
   }, [selected, flights, userPos])
