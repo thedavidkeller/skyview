@@ -373,7 +373,6 @@ export default function App() {
         zoom={5}
         zoomControl={false}
         attributionControl={false}
-        preferCanvas={true}
         className={styles.map}
       >
         <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png" maxZoom={18} />

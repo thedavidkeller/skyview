@@ -38,7 +38,10 @@ html, body, #root {
 }
 
 /* Leaflet overrides */
-.leaflet-tile-pane {
+/* Filter on the pane container creates a GPU compositing layer on iOS WebKit
+   that blanks all child tiles. Apply to individual tiles instead. */
+.leaflet-tile-pane .leaflet-tile {
+  -webkit-filter: saturate(0.2) brightness(1.08) contrast(0.88);
   filter: saturate(0.2) brightness(1.08) contrast(0.88);
 }
 .leaflet-control-zoom,
@@ -48,7 +51,7 @@ html, body, #root {
 .leaflet-container {
   width: 100%;
   height: 100%;
-  touch-action: pan-x pan-y;
+  /* Let Leaflet set touch-action itself — overriding it breaks iOS gesture handling */
 }
 
 /* Scrollbar */
