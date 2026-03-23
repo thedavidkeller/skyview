@@ -43,6 +43,11 @@ export default function FlightPanel({ open, onClose, base, rich, loading, hasApi
   const squawk   = rich?.squawk       || '—'
   const callsign = rich?.flight_iata  || base.callsign || base.icao
 
+  const craftType = base.category === 'A7' ? 'helicopter'
+    : base.category === 'B6' ? 'drone'
+    : base.category === 'B1' ? 'glider'
+    : 'airplane'
+
   const distMi = userPos ? distanceMi(userPos.lat, userPos.lon, base.lat, base.lon) : null
   const closing = userPos ? closingSpeed(userPos.lat, userPos.lon, base) : null
   const isLow  = altFt > 0 && altFt < 1500
@@ -53,7 +58,7 @@ export default function FlightPanel({ open, onClose, base, rich, loading, hasApi
       <div className={styles.topRow}>
         <div>
           <div className={styles.callsign}>{callsign}</div>
-          <div className={styles.sub}>{airline ? `${airline} · ` : ''}{base.country || 'unknown'}</div>
+          <div className={styles.sub}>{craftType}{airline ? ` · ${airline}` : ''}{base.country ? ` · ${base.country}` : ''}</div>
         </div>
         <button className={styles.close} onClick={onClose}>✕</button>
       </div>

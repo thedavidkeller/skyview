@@ -63,6 +63,7 @@ export default async function handler(req, res) {
         vRateMs,                  // [11] vertical_rate (m/s)
         null, null,               // [12,13] sensors, geo_altitude
         ac.squawk || null,        // [14] squawk
+        ac.category || null,      // [15] aircraft category (A7=helicopter, B6=drone, etc.)
       ]
     })
 

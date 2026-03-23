@@ -44,15 +44,12 @@ function altColor(altFt, distMi) {
   return '#3a3830'                                             // high cruise
 }
 
-function markerStyle(selected, altFt, distMi) {
+function planeIcon(heading = 0, selected = false, altFt = 99999, distMi = 99) {
   const color = selected ? '#c4622d' : altColor(altFt, distMi)
-  return {
-    radius:      selected ? 8 : (distMi < RADIUS_MI ? 6 : 4),
-    fillColor:   color,
-    fillOpacity: selected ? 1 : (distMi < RADIUS_MI ? 0.9 : 0.65),
-    color:       selected ? '#c4622d' : 'rgba(0,0,0,0.25)',
-    weight:      selected ? 2 : 1,
-  }
+  const size  = selected ? 20 : (distMi < RADIUS_MI ? 16 : 13)
+  const op    = selected ? 1 : (distMi < RADIUS_MI ? 0.9 : 0.7)
+  const svg   = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 10 10" style="transform:rotate(${heading}deg)"><polygon points="5,1 8,9 5,7 2,9" fill="${color}" opacity="${op}"/></svg>`
+  return L.divIcon({ html: svg, className: '', iconSize: [size, size], iconAnchor: [size/2, size/2] })
 }
 
 // Dead-reckon a position forward by elapsedS seconds given speed (m/s) and heading (deg)
@@ -212,12 +209,13 @@ export default function App() {
       const data = await res.json()
       const next = {}
       ;(data.states || []).forEach(s => {
-        const [icao, cs, country, , , lon, lat, alt, onGround, speed, heading, , , , vSpeed] = s
+        const [icao, cs, country, , , lon, lat, alt, onGround, speed, heading, , , , vSpeed, category] = s
         if (!lat || !lon || onGround) return
         next[icao] = {
           icao, callsign: (cs || '').trim() || icao,
           lat, lon, alt, speed, heading: heading || 0,
           vSpeed: vSpeed || 0, country: country || '',
+          category: category || null,
           fetchedAt: Date.now(),
         }
       })
@@ -286,7 +284,6 @@ export default function App() {
     setArcPoints([])
     setAirports([])
     setLoading(true)
-    mapRef.current?.panTo([base.lat, base.lon], { animate: true, duration: 0.7 })
     const rich = await enrichFlight(base.callsign, base.icao)
     setRichData(rich)
     setLoading(false)
@@ -336,23 +333,20 @@ export default function App() {
     }
   }, [flights, selectFlight])
 
-  // ── Render markers (canvas — one <canvas> for all markers, no DOM per plane) ──
+  // ── Render markers ────────────────────────────────────────────────────────────
   useEffect(() => {
     const map = mapRef.current
     if (!map) return
-    if (!canvasRef.current) canvasRef.current = L.canvas({ padding: 0.5 })
     const seen = new Set()
     Object.values(flights).forEach(d => {
       seen.add(d.icao)
       const altFt = ft(d.alt)
       const dist  = userPos ? distanceMi(userPos.lat, userPos.lon, d.lat, d.lon) : 99
-      const style = markerStyle(d.icao === selected, altFt, dist)
       if (markersRef.current[d.icao]) {
         markersRef.current[d.icao].setLatLng([d.lat, d.lon])
-        markersRef.current[d.icao].setRadius(style.radius)
-        markersRef.current[d.icao].setStyle(style)
+        markersRef.current[d.icao].setIcon(planeIcon(d.heading, d.icao === selected, altFt, dist))
       } else {
-        const m = L.circleMarker([d.lat, d.lon], { ...style, renderer: canvasRef.current }).addTo(map)
+        const m = L.marker([d.lat, d.lon], { icon: planeIcon(d.heading, false, altFt, dist) }).addTo(map)
         m.on('click', () => selectFlight(d.icao))
         markersRef.current[d.icao] = m
       }
@@ -368,9 +362,7 @@ export default function App() {
       if (d) {
         const altFt = ft(d.alt)
         const dist  = userPos ? distanceMi(userPos.lat, userPos.lon, d.lat, d.lon) : 99
-        const style = markerStyle(icao === selected, altFt, dist)
-        m.setRadius(style.radius)
-        m.setStyle(style)
+        m.setIcon(planeIcon(d.heading, icao === selected, altFt, dist))
       }
     })
   }, [selected, flights, userPos])
