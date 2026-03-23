@@ -98,6 +98,7 @@ export default function App() {
   const fetchTimer  = useRef(null)
   const abortRef    = useRef(null)
   const watchRef    = useRef(null)
+  const lastFetchAt = useRef(0)
 
   // persist key
   useEffect(() => {
@@ -137,9 +138,12 @@ export default function App() {
   }, [])
 
   // ── OpenSky fetch ─────────────────────────────────────────────────────────────
-  const fetchFlights = useCallback(async () => {
+  const fetchFlights = useCallback(async (force = false) => {
     const map = mapRef.current
     if (!map) return
+    const now = Date.now()
+    if (!force && now - lastFetchAt.current < 15000) return
+    lastFetchAt.current = now
     if (abortRef.current) abortRef.current.abort()
     abortRef.current = new AbortController()
 
@@ -192,8 +196,8 @@ export default function App() {
   }, [fetchFlights])
 
   useEffect(() => {
-    fetchFlights()
-    const interval = setInterval(fetchFlights, 30000)
+    fetchFlights(true)
+    const interval = setInterval(() => fetchFlights(true), 45000)
     return () => clearInterval(interval)
   }, [fetchFlights])
 
