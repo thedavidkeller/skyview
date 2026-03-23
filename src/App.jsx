@@ -71,7 +71,18 @@ function deadReckon(lat, lon, speedMs, heading, elapsedS) {
 // ── MapController ─────────────────────────────────────────────────────────────
 function MapController({ onBoundsChange, mapRef }) {
   const map = useMap()
-  useEffect(() => { mapRef.current = map }, [map, mapRef])
+  useEffect(() => {
+    mapRef.current = map
+    // iOS: browser chrome height settles after first paint — force Leaflet to
+    // re-read the container size so tiles and bounds are calculated correctly.
+    const t = setTimeout(() => map.invalidateSize(), 300)
+    return () => clearTimeout(t)
+  }, [map, mapRef])
+  useEffect(() => {
+    const onResize = () => map.invalidateSize()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [map])
   useMapEvents({ moveend: onBoundsChange, zoomend: onBoundsChange })
   return null
 }
@@ -115,6 +126,15 @@ export default function App() {
   const abortRef    = useRef(null)
   const watchRef    = useRef(null)
   const lastFetchAt = useRef(0)
+
+  // Set --app-height from window.innerHeight so the map container has the
+  // correct pixel size on iOS (where 100%/100vh chains are unreliable).
+  useEffect(() => {
+    const set = () => document.documentElement.style.setProperty('--app-height', window.innerHeight + 'px')
+    set()
+    window.addEventListener('resize', set)
+    return () => window.removeEventListener('resize', set)
+  }, [])
 
   // persist key
   useEffect(() => {
