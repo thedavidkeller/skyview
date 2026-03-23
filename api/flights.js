@@ -1,41 +1,24 @@
-export default async function handler(req, res) {
-  const { lamin, lomin, lamax, lomax } = req.query
+export const config = { runtime: 'edge' }
 
+export default async function handler(req) {
+  const { searchParams } = new URL(req.url)
+  const lamin = searchParams.get('lamin')
+  const lomin = searchParams.get('lomin')
+  const lamax = searchParams.get('lamax')
+  const lomax = searchParams.get('lomax')
   if (!lamin || !lomin || !lamax || !lomax) {
-    return res.status(400).json({ error: 'Missing bbox params' })
+    return new Response(JSON.stringify({ error: 'Missing bbox' }), { status: 400 })
   }
-
-  // Clamp values to valid ranges
-  const params = new URLSearchParams({
-    lamin: Math.max(-90,  parseFloat(lamin)).toFixed(2),
-    lomin: Math.max(-180, parseFloat(lomin)).toFixed(2),
-    lamax: Math.min(90,   parseFloat(lamax)).toFixed(2),
-    lomax: Math.min(180,  parseFloat(lomax)).toFixed(2),
-  })
-
+  const url = `https://opensky-network.org/api/states/all?lamin=${lamin}&lomin=${lomin}&lamax=${lamax}&lomax=${lomax}`
   try {
-    const upstream = await fetch(
-      `https://opensky-network.org/api/states/all?${params}`,
-      {
-        headers: {
-          'User-Agent': 'skyview-app/1.0',
-          'Accept': 'application/json',
-        },
-        signal: AbortSignal.timeout(10000),
-      }
-    )
-
-    if (!upstream.ok) {
-      return res.status(upstream.status).json({ error: 'OpenSky error', status: upstream.status })
-    }
-
-    const data = await upstream.json()
-
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Cache-Control', 's-maxage=15, stale-while-revalidate=30')
-    return res.status(200).json(data)
-
+    const res = await fetch(url, {
+      headers: { 'Accept': 'application/json', 'User-Agent': 'Mozilla/5.0 (compatible; skyview/1.0)' },
+      signal: AbortSignal.timeout(12000),
+    })
+    if (!res.ok) return new Response(JSON.stringify({ error: res.status }), { status: res.status, headers: { 'Access-Control-Allow-Origin': '*' } })
+    const data = await res.json()
+    return new Response(JSON.stringify(data), { status: 200, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'public, s-maxage=15' } })
   } catch (e) {
-    return res.status(502).json({ error: 'Upstream failed', detail: e.message })
+    return new Response(JSON.stringify({ error: e.message }), { status: 502, headers: { 'Access-Control-Allow-Origin': '*' } })
   }
 }
