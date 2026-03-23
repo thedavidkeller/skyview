@@ -46,11 +46,24 @@ function altColor(altFt, distMi) {
 
 function planeIcon(heading = 0, selected = false, altFt = 99999, distMi = 99) {
   const color = selected ? '#c4622d' : altColor(altFt, distMi)
-  const size  = selected ? 18 : (distMi < RADIUS_MI ? 14 : 11)
+  const size  = selected ? 34 : (distMi < RADIUS_MI ? 28 : 22)
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" style="transform:rotate(${heading}deg);display:block;transition:transform 0.6s ease">
-    <path d="M12 2L7.5 10.5H3.5L12 15L10 23L12 21.5L14 23L12 15L20.5 10.5H16.5Z" fill="${color}" opacity="${selected ? 1 : distMi < RADIUS_MI ? 0.9 : 0.65}"/>
+    <path d="M12 2L7.5 10.5H3.5L12 15L10 23L12 21.5L14 23L12 15L20.5 10.5H16.5Z" fill="${color}" opacity="${selected ? 1 : distMi < RADIUS_MI ? 0.9 : 0.7}"/>
   </svg>`
   return L.divIcon({ html: svg, className: '', iconSize: [size, size], iconAnchor: [size/2, size/2] })
+}
+
+// Dead-reckon a position forward by elapsedS seconds given speed (m/s) and heading (deg)
+function deadReckon(lat, lon, speedMs, heading, elapsedS) {
+  if (!speedMs || elapsedS <= 0) return [lat, lon]
+  const dist = speedMs * elapsedS
+  const R = 6371000
+  const h = heading * Math.PI / 180
+  const lat1 = lat * Math.PI / 180
+  const lon1 = lon * Math.PI / 180
+  const lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist / R) + Math.cos(lat1) * Math.sin(dist / R) * Math.cos(h))
+  const lon2 = lon1 + Math.atan2(Math.sin(h) * Math.sin(dist / R) * Math.cos(lat1), Math.cos(dist / R) - Math.sin(lat1) * Math.sin(lat2))
+  return [lat2 * 180 / Math.PI, lon2 * 180 / Math.PI]
 }
 
 // ── MapController ─────────────────────────────────────────────────────────────
@@ -176,6 +189,7 @@ export default function App() {
           icao, callsign: (cs || '').trim() || icao,
           lat, lon, alt, speed, heading: heading || 0,
           vSpeed: vSpeed || 0, country: country || '',
+          fetchedAt: Date.now(),
         }
       })
       setFlights(next)
@@ -329,6 +343,21 @@ export default function App() {
       }
     })
   }, [selected, flights, userPos])
+
+  // ── Dead-reckoning animation loop ────────────────────────────────────────────
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const now = Date.now()
+      Object.values(flights).forEach(d => {
+        const marker = markersRef.current[d.icao]
+        if (!marker || !d.speed) return
+        const elapsed = (now - d.fetchedAt) / 1000
+        const pos = deadReckon(d.lat, d.lon, d.speed, d.heading, elapsed)
+        marker.setLatLng(pos)
+      })
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [flights])
 
   const nearbyFlights = userPos
     ? Object.values(flights)
