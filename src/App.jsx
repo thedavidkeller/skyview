@@ -82,6 +82,7 @@ export default function App() {
   const [panelOpen, setPanelOpen]     = useState(false)
   const [loading, setLoading]         = useState(false)
   const [flightCount, setFlightCount] = useState(null)
+  const [fetchError, setFetchError]   = useState(null)
   const [nearbyCount, setNearbyCount] = useState(0)
   const [apiKey, setApiKey]           = useState(() => localStorage.getItem('al_key') || '')
   const [queryCount, setQueryCount]   = useState(0)
@@ -155,7 +156,13 @@ export default function App() {
       const bbox = `lamin=${lamin.toFixed(2)}&lomin=${lomin.toFixed(2)}&lamax=${lamax.toFixed(2)}&lomax=${lomax.toFixed(2)}`
       const url = `/api/flights?${bbox}`
       const res = await fetch(url, { signal: abortRef.current.signal })
-      if (!res.ok) return
+      if (!res.ok) {
+        const body = await res.text().catch(() => '')
+        console.error(`OpenSky proxy error ${res.status}:`, body)
+        setFetchError(`error ${res.status}`)
+        setFlightCount(c => c === null ? 0 : c)
+        return
+      }
       const data = await res.json()
       const next = {}
       ;(data.states || []).forEach(s => {
@@ -169,8 +176,13 @@ export default function App() {
       })
       setFlights(next)
       setFlightCount(Object.keys(next).length)
+      setFetchError(null)
     } catch (e) {
-      if (e.name !== 'AbortError') console.warn('fetch failed', e)
+      if (e.name !== 'AbortError') {
+        console.error('fetch failed', e)
+        setFetchError('no connection')
+        setFlightCount(c => c === null ? 0 : c)
+      }
     }
   }, [])
 
@@ -359,7 +371,7 @@ export default function App() {
         ))}
       </MapContainer>
 
-      <Header count={flightCount} nearbyCount={nearbyCount} alert={!!alert} />
+      <Header count={flightCount} nearbyCount={nearbyCount} alert={!!alert} error={fetchError} />
       <ApiKeyInput value={apiKey} onChange={setApiKey} queryCount={queryCount} />
       <SearchBar onSearch={handleSearch} message={searchMsg} />
 
