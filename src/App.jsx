@@ -202,8 +202,7 @@ export default function App() {
         const body = await res.text().catch(() => '')
         console.error(`flights proxy error ${res.status}:`, body)
         if (res.status === 429) {
-          backoffUntil.current = Date.now() + 60000  // back off 60s on rate limit
-          setFetchError('rate limited — retrying in 60s')
+          backoffUntil.current = Date.now() + 60000  // back off 60s, keep last count visible
         } else {
           setFetchError(`error ${res.status}`)
         }
