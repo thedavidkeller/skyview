@@ -375,7 +375,7 @@ export default function App() {
         attributionControl={false}
         className={styles.map}
       >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png" maxZoom={18} />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png" maxZoom={18} />
         <MapController onBoundsChange={scheduleFetch} mapRef={mapRef} />
 
         {/* 3mi radius ring */}

@@ -38,11 +38,12 @@ html, body, #root {
 }
 
 /* Leaflet overrides */
-/* Filter on the pane container creates a GPU compositing layer on iOS WebKit
-   that blanks all child tiles. Apply to individual tiles instead. */
-.leaflet-tile-pane .leaflet-tile {
-  -webkit-filter: saturate(0.2) brightness(1.08) contrast(0.88);
-  filter: saturate(0.2) brightness(1.08) contrast(0.88);
+/* Desaturate tiles on desktop only — per-tile filter creates one compositing
+   layer per tile on iOS, which kills mobile performance. */
+@media (hover: hover) {
+  .leaflet-tile-pane {
+    filter: saturate(0.2) brightness(1.08) contrast(0.88);
+  }
 }
 .leaflet-control-zoom,
 .leaflet-control-attribution {
