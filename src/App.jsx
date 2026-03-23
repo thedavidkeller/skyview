@@ -37,8 +37,9 @@ function closingSpeed(myLat, myLon, plane) {
 
 // Color by altitude
 function altColor(altFt, distMi) {
-  const isNear = distMi < RADIUS_MI
   if (altFt <= 0) return '#888'
+  if (altFt <= 400) return '#e53e3e'                          // drone airspace — always red
+  const isNear = distMi < RADIUS_MI
   if (altFt < 1200) return isNear ? '#e53e3e' : '#e07b39'   // low: red if nearby, orange otherwise
   if (altFt < 5000) return '#d4a017'                          // mid
   return '#3a3830'                                             // high cruise
@@ -111,6 +112,7 @@ export default function App() {
   const [queryCount, setQueryCount]   = useState(0)
   const [arcPoints, setArcPoints]     = useState([])
   const [airports, setAirports]       = useState([])
+  const [trailPoints, setTrailPoints] = useState([])
   const [searchMsg, setSearchMsg]     = useState('')
   const [userPos, setUserPos]         = useState(null)
   const [locating, setLocating]       = useState(false)
@@ -124,6 +126,7 @@ export default function App() {
   const watchRef      = useRef(null)
   const lastFetchAt   = useRef(0)
   const backoffUntil  = useRef(0)
+  const trailsRef     = useRef({})
 
   // Set --app-height from window.innerHeight so the map container has the
   // correct pixel size on iOS (where 100%/100vh chains are unreliable).
@@ -232,6 +235,16 @@ export default function App() {
           fetchedAt: Date.now(),
         }
       })
+      // Record position history for trail rendering
+      Object.values(next).forEach(d => {
+        const trail = trailsRef.current[d.icao] || (trailsRef.current[d.icao] = [])
+        const last = trail[trail.length - 1]
+        if (!last || last.lat !== d.lat || last.lon !== d.lon) {
+          trail.push({ lat: d.lat, lon: d.lon })
+          if (trail.length > 12) trail.shift()
+        }
+      })
+      Object.keys(trailsRef.current).forEach(icao => { if (!next[icao]) delete trailsRef.current[icao] })
       setFlights(next)
       setFlightCount(Object.keys(next).length)
       setFetchError(null)
@@ -326,7 +339,7 @@ export default function App() {
   }, [flights, enrichFlight])
 
   const closePanel = useCallback(() => {
-    setPanelOpen(false); setSelected(null); setArcPoints([]); setAirports([])
+    setPanelOpen(false); setSelected(null); setArcPoints([]); setAirports([]); setTrailPoints([])
   }, [])
 
   // ── Search ────────────────────────────────────────────────────────────────────
@@ -345,6 +358,13 @@ export default function App() {
       setTimeout(() => setSearchMsg(''), 2500)
     }
   }, [flights, selectFlight])
+
+  // Update trail when selection or flight data changes
+  useEffect(() => {
+    if (!selected) { setTrailPoints([]); return }
+    const trail = trailsRef.current[selected] || []
+    setTrailPoints(trail.map(p => [p.lat, p.lon]))
+  }, [selected, flights])
 
   // ── Render markers ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -430,6 +450,9 @@ export default function App() {
           </>
         )}
 
+        {trailPoints.length >= 2 && (
+          <Polyline positions={trailPoints} pathOptions={{ color: '#e53e3e', weight: 2, opacity: 0.55, dashArray: '3 5' }} />
+        )}
         {arcPoints.length >= 2 && (
           <Polyline positions={arcPoints} pathOptions={{ color: 'rgba(196,98,45,0.35)', weight: 1, dashArray: '4 7' }} />
         )}
