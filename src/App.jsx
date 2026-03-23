@@ -164,9 +164,20 @@ export default function App() {
   useEffect(() => {
     if (!navigator.geolocation) return
     watchRef.current = navigator.geolocation.watchPosition(
-      pos => setUserPos({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      pos => {
+        const { latitude: lat, longitude: lon } = pos.coords
+        setUserPos({ lat, lon })
+        // Keep map centered on user unless they've manually panned away
+        const map = mapRef.current
+        if (map && map.getZoom() >= 12) {
+          const c = map.getCenter()
+          if (distanceMi(lat, lon, c.lat, c.lng) < 0.3) {
+            map.panTo([lat, lon], { animate: true, duration: 1 })
+          }
+        }
+      },
       null,
-      { enableHighAccuracy: true, maximumAge: 10000 }
+      { enableHighAccuracy: true, maximumAge: 5000 }
     )
     return () => navigator.geolocation.clearWatch(watchRef.current)
   }, [])
@@ -411,8 +422,8 @@ export default function App() {
             />
             <CircleMarker
               center={[userPos.lat, userPos.lon]}
-              radius={5}
-              pathOptions={{ color: '#c4622d', fillColor: '#c4622d', fillOpacity: 1, weight: 2 }}
+              radius={9}
+              pathOptions={{ color: 'rgba(255,255,255,0.9)', fillColor: '#2563eb', fillOpacity: 1, weight: 2.5 }}
             />
           </>
         )}
