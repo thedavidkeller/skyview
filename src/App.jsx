@@ -155,7 +155,7 @@ export default function App() {
     const map = mapRef.current
     if (!map) return
     const now = Date.now()
-    if (!force && now - lastFetchAt.current < 15000) return
+    if (!force && now - lastFetchAt.current < 20000) return
     lastFetchAt.current = now
     if (abortRef.current) abortRef.current.abort()
     abortRef.current = new AbortController()
@@ -355,7 +355,7 @@ export default function App() {
         const pos = deadReckon(d.lat, d.lon, d.speed, d.heading, elapsed)
         marker.setLatLng(pos)
       })
-    }, 1000)
+    }, 3000)
     return () => clearInterval(timer)
   }, [flights])
 

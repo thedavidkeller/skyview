@@ -18,7 +18,7 @@ export default async function handler(req, res) {
   const lon = (parseFloat(lomin) + parseFloat(lomax)) / 2
   const latSpan = parseFloat(lamax) - parseFloat(lamin)
   const lonSpan = parseFloat(lomax) - parseFloat(lomin)
-  const radiusNm = Math.min(Math.ceil(Math.max(latSpan, lonSpan) * 60), 250)
+  const radiusNm = Math.min(Math.ceil(Math.max(latSpan, lonSpan) * 60), 150)
 
   const url = `https://api.airplanes.live/v2/point/${lat.toFixed(4)}/${lon.toFixed(4)}/${radiusNm}`
 
