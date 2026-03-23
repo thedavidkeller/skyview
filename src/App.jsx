@@ -151,7 +151,7 @@ export default function App() {
         const { latitude: lat, longitude: lon } = pos.coords
         setUserPos({ lat, lon })
         setLocating(false)
-        mapRef.current?.setView([lat, lon], 12, { animate: true, duration: 0.8 })
+        mapRef.current?.setView([lat, lon], 14, { animate: true, duration: 0.8 })
       },
       () => setLocating(false),
       { enableHighAccuracy: true, timeout: 8000 }
@@ -401,7 +401,7 @@ export default function App() {
     <div className={styles.app}>
       <MapContainer
         center={[37.8, -122.4]}
-        zoom={10}
+        zoom={12}
         zoomControl={false}
         attributionControl={false}
         className={styles.map}
