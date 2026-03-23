@@ -153,8 +153,7 @@ export default function App() {
 
     try {
       const bbox = `lamin=${lamin.toFixed(2)}&lomin=${lomin.toFixed(2)}&lamax=${lamax.toFixed(2)}&lomax=${lomax.toFixed(2)}`
-      const openSkyUrl = `https://opensky-network.org/api/states/all?${bbox}`
-      const url = `https://corsproxy.io/?url=${encodeURIComponent(openSkyUrl)}`
+      const url = `/api/flights?${bbox}`
       const res = await fetch(url, { signal: abortRef.current.signal })
       if (!res.ok) return
       const data = await res.json()
