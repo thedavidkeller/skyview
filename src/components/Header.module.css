@@ -23,7 +23,7 @@
 .status {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .dot {
@@ -43,4 +43,28 @@
   font-size: 10px;
   color: var(--text-muted);
   letter-spacing: 0.07em;
+  font-family: var(--font-mono);
+}
+
+.nearby {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  background: rgba(196, 98, 45, 0.1);
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid rgba(196, 98, 45, 0.2);
+}
+
+.nearby.alert {
+  color: #e53e3e;
+  background: rgba(229, 62, 62, 0.1);
+  border-color: rgba(229, 62, 62, 0.3);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }

@@ -231,3 +231,56 @@
   letter-spacing: 0.04em;
   line-height: 1.7;
 }
+
+/* Distance block */
+.distBlock {
+  display: flex;
+  align-items: stretch;
+  background: var(--bg-stat);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 12px 0;
+  border: 1px solid var(--border);
+}
+
+.distBlock.distWarn {
+  border-color: rgba(229, 62, 62, 0.4);
+  background: rgba(229, 62, 62, 0.06);
+}
+
+.distItem {
+  flex: 1;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.distDivider {
+  width: 1px;
+  background: var(--border);
+}
+
+.distLabel {
+  font-size: 8px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.distValue {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.distUnit {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-left: 2px;
+}
+
+.approaching { color: #e53e3e !important; }
+.departing   { color: var(--green) !important; }
+
+.stat.warn { background: rgba(229, 62, 62, 0.06); }
+.stat.warn .statValue { color: #e53e3e; }

@@ -12,6 +12,34 @@
   height: 100%;
 }
 
+/* Locate button */
+.locateBtn {
+  position: absolute;
+  bottom: calc(70px + env(safe-area-inset-bottom));
+  left: 20px;
+  z-index: 1000;
+  background: rgba(245, 242, 238, 0.92);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-size: 18px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.locateBtn:hover { border-color: var(--border-hover); }
+.locateBtn.locating { color: var(--text-muted); animation: spin 1s linear infinite; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Refresh button */
 .refreshBtn {
   position: absolute;
   bottom: calc(22px + env(safe-area-inset-bottom));
@@ -34,7 +62,99 @@
   -webkit-backdrop-filter: blur(10px);
 }
 
-.refreshBtn:hover {
-  color: var(--text-secondary);
-  border-color: var(--border-hover);
+.refreshBtn:hover { color: var(--text-secondary); border-color: var(--border-hover); }
+
+/* Alert banner */
+.alertBanner {
+  position: absolute;
+  top: calc(58px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1002;
+  background: rgba(229, 62, 62, 0.92);
+  border: 1px solid rgba(229, 62, 62, 0.4);
+  border-radius: 30px;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: slideDown 0.3s ease;
 }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.alertDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: white;
+  animation: blink 0.8s ease-in-out infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.alertText {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: white;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* Nearby panel */
+.nearbyPanel {
+  position: absolute;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  left: 70px;
+  right: 20px;
+  z-index: 1000;
+  background: rgba(245, 242, 238, 0.94);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.nearbyRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.nearbyRow:last-child { border-bottom: none; }
+.nearbyRow:active { background: rgba(0,0,0,0.04); }
+
+.nearbyDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nearbyCall {
+  color: var(--text-primary);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nearbyDist { color: var(--text-muted); min-width: 32px; }
+.nearbyAlt  { color: var(--text-secondary); min-width: 52px; text-align: right; }
+.nearbyClose { color: var(--text-muted); min-width: 40px; text-align: right; }
+.nearbyClose.approaching { color: #e53e3e; font-weight: 500; }
