@@ -402,7 +402,7 @@ export default function App() {
     <div className={styles.app}>
       <MapContainer
         center={[37.8, -122.4]}
-        zoom={5}
+        zoom={10}
         zoomControl={false}
         attributionControl={false}
         className={styles.map}
