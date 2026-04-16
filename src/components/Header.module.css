@@ -4,20 +4,42 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: calc(18px + env(safe-area-inset-top)) 22px 0;
+  padding: calc(16px + env(safe-area-inset-top)) 22px 14px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   pointer-events: none;
+  background: linear-gradient(to bottom, rgba(11, 18, 32, 0.72) 0%, transparent 100%);
+}
+
+.logoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .logo {
   font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   color: var(--text-primary);
   text-transform: uppercase;
+}
+
+.logoSub {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  flex-shrink: 0;
 }
 
 .status {
@@ -36,7 +58,7 @@
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.25; }
+  50% { opacity: 0.2; }
 }
 
 .count {
@@ -51,16 +73,16 @@
   font-family: var(--font-mono);
   letter-spacing: 0.06em;
   color: var(--accent);
-  background: rgba(196, 98, 45, 0.1);
+  background: var(--accent-dim);
   padding: 2px 8px;
-  border-radius: 20px;
-  border: 1px solid rgba(196, 98, 45, 0.2);
+  border-radius: 6px;
+  border: 1px solid rgba(13, 108, 242, 0.25);
 }
 
 .nearby.alert {
-  color: #e53e3e;
-  background: rgba(229, 62, 62, 0.1);
-  border-color: rgba(229, 62, 62, 0.3);
+  color: #f87171;
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(248, 113, 113, 0.3);
   animation: pulse 1s ease-in-out infinite;
 }
 

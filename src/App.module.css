@@ -17,20 +17,20 @@
   bottom: calc(70px + env(safe-area-inset-bottom));
   left: 20px;
   z-index: 1000;
-  background: rgba(245, 242, 238, 0.92);
+  background: var(--bg-overlay);
   border: 1px solid var(--border);
   color: var(--accent);
   font-size: 18px;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .locateBtn:hover { border-color: var(--border-hover); }
@@ -44,21 +44,21 @@
   bottom: calc(22px + env(safe-area-inset-bottom));
   left: 20px;
   z-index: 1000;
-  background: rgba(245, 242, 238, 0.88);
+  background: var(--bg-overlay);
   border: 1px solid var(--border);
   color: var(--text-muted);
   font-family: var(--font-mono);
   font-size: 13px;
   width: 34px;
   height: 34px;
-  border-radius: 50%;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: color 0.2s, border-color 0.2s;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .refreshBtn:hover { color: var(--text-secondary); border-color: var(--border-hover); }
@@ -70,15 +70,15 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 1002;
-  background: rgba(229, 62, 62, 0.92);
-  border: 1px solid rgba(229, 62, 62, 0.4);
-  border-radius: 30px;
+  background: rgba(220, 38, 38, 0.18);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 8px;
   padding: 7px 14px;
   display: flex;
   align-items: center;
   gap: 8px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   animation: slideDown 0.3s ease;
 }
 
@@ -91,7 +91,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: white;
+  background: #f87171;
   animation: blink 0.8s ease-in-out infinite;
 }
 
@@ -100,7 +100,7 @@
 .alertText {
   font-family: var(--font-mono);
   font-size: 11px;
-  color: white;
+  color: #fca5a5;
   letter-spacing: 0.05em;
   white-space: nowrap;
 }
@@ -112,12 +112,12 @@
   left: 70px;
   right: 20px;
   z-index: 1000;
-  background: rgba(245, 242, 238, 0.94);
+  background: var(--bg-overlay);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .nearbyRow {
@@ -133,7 +133,7 @@
 }
 
 .nearbyRow:last-child { border-bottom: none; }
-.nearbyRow:active { background: rgba(0,0,0,0.04); }
+.nearbyRow:active { background: rgba(255,255,255,0.04); }
 
 .nearbyDot {
   width: 7px;
@@ -156,4 +156,4 @@
 .nearbyDist { color: var(--text-muted); min-width: 32px; }
 .nearbyAlt  { color: var(--text-secondary); min-width: 52px; text-align: right; }
 .nearbyClose { color: var(--text-muted); min-width: 40px; text-align: right; }
-.nearbyClose.approaching { color: #e53e3e; font-weight: 500; }
+.nearbyClose.approaching { color: #f87171; font-weight: 500; }

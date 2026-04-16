@@ -37,16 +37,16 @@ function closingSpeed(myLat, myLon, plane) {
 
 // Color by altitude
 function altColor(altFt, distMi) {
-  if (altFt <= 0) return '#888'
-  if (altFt <= 400) return '#e53e3e'                          // drone airspace — always red
+  if (altFt <= 0) return '#3d506b'
+  if (altFt <= 400) return '#f87171'                          // drone airspace — always red
   const isNear = distMi < RADIUS_MI
-  if (altFt < 1200) return isNear ? '#e53e3e' : '#e07b39'   // low: red if nearby, orange otherwise
-  if (altFt < 5000) return '#d4a017'                          // mid
-  return '#3a3830'                                             // high cruise
+  if (altFt < 1200) return isNear ? '#f87171' : '#fb923c'   // low: red if nearby, orange otherwise
+  if (altFt < 5000) return '#fbbf24'                          // mid
+  return '#60a5fa'                                             // high cruise — light blue on dark map
 }
 
 function planeIcon(heading = 0, selected = false, altFt = 99999, distMi = 99) {
-  const color = selected ? '#c4622d' : altColor(altFt, distMi)
+  const color = selected ? '#0d6cf2' : altColor(altFt, distMi)
   const size  = selected ? 20 : (distMi < RADIUS_MI ? 16 : 13)
   const op    = selected ? 1 : (distMi < RADIUS_MI ? 0.9 : 0.7)
   const svg   = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 10 10" style="transform:rotate(${heading}deg)"><polygon points="5,1 8,9 5,7 2,9" fill="${color}" opacity="${op}"/></svg>`
@@ -324,11 +324,11 @@ export default function App() {
         LAS:[36.080,-115.152],IAH:[29.984,-95.341],MCO:[28.429,-81.309],SAN:[32.734,-117.190],
         PDX:[45.589,-122.593],AUS:[30.197,-97.666],YYZ:[43.677,-79.631],YVR:[49.195,-123.184],
         MAN:[53.354,-2.275],BCN:[41.298,2.078],MAD:[40.472,-3.562],FCO:[41.800,12.239],
-        ZRH:[47.458,8.548],VIE:[48.110,16.570],IST:[41.275,28.752],DXB:[25.252,55.364],
-        DOH:[25.261,51.565],BOM:[19.089,72.868],DEL:[28.556,77.100],PVG:[31.144,121.805],
-        ICN:[37.469,126.451],HKG:[22.309,113.915],BKK:[13.681,100.747],SIN:[1.359,103.989],
-        GRU:[-23.432,-46.469],EZE:[-34.822,-58.536],MEX:[19.436,-99.072],BOG:[4.702,-74.147],
-        OAK:[37.721,-122.221],SJC:[37.362,-121.929],SFO:[37.619,-122.374],SMF:[38.695,-121.591],
+        ZRH:[47.458,8.548],VIE:[48.110,16.570],IST:[41.275,28.752],DOH:[25.261,51.565],
+        BOM:[19.089,72.868],DEL:[28.556,77.100],PVG:[31.144,121.805],ICN:[37.469,126.451],
+        HKG:[22.309,113.915],BKK:[13.681,100.747],GRU:[-23.432,-46.469],EZE:[-34.822,-58.536],
+        MEX:[19.436,-99.072],BOG:[4.702,-74.147],OAK:[37.721,-122.221],SJC:[37.362,-121.929],
+        SMF:[38.695,-121.591],
       }
       const pts = [], apts = []
       if (dep && AIRPORTS[dep]) { pts.push(AIRPORTS[dep]); apts.push({ lat: AIRPORTS[dep][0], lon: AIRPORTS[dep][1], code: dep }) }
@@ -431,7 +431,7 @@ export default function App() {
         attributionControl={false}
         className={styles.map}
       >
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png" maxZoom={18} />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png" maxZoom={18} />
         <MapController onBoundsChange={scheduleFetch} mapRef={mapRef} />
 
         {/* 3mi radius ring */}
@@ -440,25 +440,25 @@ export default function App() {
             <Circle
               center={[userPos.lat, userPos.lon]}
               radius={RADIUS_MI * MI_TO_M}
-              pathOptions={{ color: 'rgba(196,98,45,0.5)', weight: 1.5, fill: false, dashArray: '6 8' }}
+              pathOptions={{ color: 'rgba(13,108,242,0.45)', weight: 1.5, fill: false, dashArray: '6 8' }}
             />
             <CircleMarker
               center={[userPos.lat, userPos.lon]}
               radius={9}
-              pathOptions={{ color: 'rgba(255,255,255,0.9)', fillColor: '#2563eb', fillOpacity: 1, weight: 2.5 }}
+              pathOptions={{ color: 'rgba(255,255,255,0.85)', fillColor: '#0d6cf2', fillOpacity: 1, weight: 2.5 }}
             />
           </>
         )}
 
         {trailPoints.length >= 2 && (
-          <Polyline positions={trailPoints} pathOptions={{ color: '#e53e3e', weight: 2, opacity: 0.55, dashArray: '3 5' }} />
+          <Polyline positions={trailPoints} pathOptions={{ color: '#60a5fa', weight: 2, opacity: 0.55, dashArray: '3 5' }} />
         )}
         {arcPoints.length >= 2 && (
-          <Polyline positions={arcPoints} pathOptions={{ color: 'rgba(196,98,45,0.35)', weight: 1, dashArray: '4 7' }} />
+          <Polyline positions={arcPoints} pathOptions={{ color: 'rgba(13,108,242,0.35)', weight: 1, dashArray: '4 7' }} />
         )}
         {airports.map(a => (
           <CircleMarker key={a.code} center={[a.lat, a.lon]} radius={3}
-            pathOptions={{ color: 'rgba(196,98,45,0.7)', fillColor: 'rgba(196,98,45,0.25)', fillOpacity: 1, weight: 1 }} />
+            pathOptions={{ color: 'rgba(13,108,242,0.7)', fillColor: 'rgba(13,108,242,0.25)', fillOpacity: 1, weight: 1 }} />
         ))}
       </MapContainer>
 

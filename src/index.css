@@ -5,20 +5,21 @@
 }
 
 :root {
-  --bg: #f0ede8;
-  --bg-panel: rgba(245, 242, 238, 0.98);
-  --bg-stat: #e8e4de;
-  --border: rgba(0, 0, 0, 0.08);
-  --border-hover: rgba(0, 0, 0, 0.18);
-  --text-primary: #1a1a18;
-  --text-secondary: #4a4740;
-  --text-muted: #9a9590;
-  --accent: #c4622d;
-  --accent-dim: rgba(196, 98, 45, 0.15);
-  --accent-dot: rgba(196, 98, 45, 0.6);
-  --green: #2d8a4e;
+  --bg: #0b1220;
+  --bg-panel: rgba(11, 18, 32, 0.98);
+  --bg-stat: #141e30;
+  --bg-overlay: rgba(11, 18, 32, 0.86);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.20);
+  --text-primary: #e8eeff;
+  --text-secondary: #7a8fad;
+  --text-muted: #3d506b;
+  --accent: #0d6cf2;
+  --accent-dim: rgba(13, 108, 242, 0.15);
+  --accent-dot: rgba(13, 108, 242, 0.55);
+  --green: #22d36e;
   --font-mono: 'DM Mono', monospace;
-  --font-display: 'Syne', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
 }
 
 html {
@@ -38,12 +39,8 @@ html, body, #root {
 }
 
 /* Leaflet overrides */
-/* Desaturate tiles on desktop only — per-tile filter creates one compositing
-   layer per tile on iOS, which kills mobile performance. */
-@media (hover: hover) {
-  .leaflet-tile-pane {
-    filter: saturate(0.2) brightness(1.08) contrast(0.88);
-  }
+.leaflet-tile-pane {
+  filter: brightness(0.85) saturate(0.7);
 }
 .leaflet-control-zoom,
 .leaflet-control-attribution {
@@ -52,10 +49,9 @@ html, body, #root {
 .leaflet-container {
   width: 100%;
   height: 100%;
-  /* Let Leaflet set touch-action itself — overriding it breaks iOS gesture handling */
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-hover); border-radius: 2px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }

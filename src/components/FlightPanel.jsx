@@ -74,8 +74,8 @@ export default function FlightPanel({ open, onClose, base, rich, loading, hasApi
             </div>
             <div className={styles.routeMid}>
               <svg viewBox="0 0 80 24" className={styles.arcSvg}>
-                <path d="M4 20 Q40 2 76 20" stroke="rgba(196,98,45,0.35)" strokeWidth="1" strokeDasharray="3 5" fill="none"/>
-                <circle cx="40" cy="11" r="2.5" fill="#c4622d" opacity="0.8"/>
+                <path d="M4 20 Q40 2 76 20" stroke="rgba(13,108,242,0.4)" strokeWidth="1" strokeDasharray="3 5" fill="none"/>
+                <circle cx="40" cy="11" r="2.5" fill="#0d6cf2" opacity="0.9"/>
               </svg>
               <div className={styles.routeDots}>· · ·</div>
             </div>

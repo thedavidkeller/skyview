@@ -16,19 +16,19 @@
 }
 
 .input {
-  background: rgba(245, 242, 238, 0.92);
+  background: var(--bg-overlay);
   border: 1px solid var(--border);
   color: var(--text-primary);
   font-family: var(--font-mono);
   font-size: 12px;
   padding: 10px 16px;
-  border-radius: 30px;
+  border-radius: 8px;
   width: 210px;
   outline: none;
   letter-spacing: 0.04em;
   transition: border-color 0.2s;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   -webkit-appearance: none;
 }
 
@@ -37,28 +37,26 @@
 }
 
 .input:focus {
-  border-color: var(--border-hover);
+  border-color: rgba(13, 108, 242, 0.5);
 }
 
 .btn {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--border);
-  color: var(--text-secondary);
+  background: var(--accent);
+  border: 1px solid rgba(13, 108, 242, 0.6);
+  color: #fff;
   font-family: var(--font-mono);
   font-size: 11px;
-  padding: 10px 14px;
-  border-radius: 30px;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
   letter-spacing: 0.06em;
-  transition: background 0.2s, color 0.2s;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  transition: background 0.2s, opacity 0.2s;
   -webkit-appearance: none;
 }
 
 .btn:hover, .btn:active {
-  background: rgba(0, 0, 0, 0.08);
-  color: var(--text-primary);
+  background: #1a7fff;
+  opacity: 0.9;
 }
 
 .msg {
